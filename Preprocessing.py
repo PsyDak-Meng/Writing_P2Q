@@ -28,7 +28,7 @@ def parse_text_change(text):
 
 def preprocess_logs(log):
     #enc = OneHotEncoder()
-    log['mean_time'] = (log.down_time+log.up_time)/2
+    log['mean_time'] = (log['down_time']+['log.up_time'])/2
 
     # ACTIVITY
     print('Encoding activity...')
@@ -48,8 +48,8 @@ def preprocess_logs(log):
     # EVENT
     print('Encoding event...')
     if 'UpEvent_onehot.npy' not in os.listdir('Data/') or 'DownEvent_onehot.npy' not in os.listdir('Data/'):
-        down = list(map(lambda x:'q' if len(x)==1 else x, log.down_event))
-        up = list(map(lambda x:'q' if len(x)==1 else x, log.up_event))
+        down = list(map(lambda x:'q' if len(x)==1 else x, log['down_event']))
+        up = list(map(lambda x:'q' if len(x)==1 else x, log['up_event']))
         both = up.copy()
         both.extend(down)
         #print(Counter(event))
