@@ -4,6 +4,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm
+import argparse
 
 
 def set_device():
@@ -48,6 +49,13 @@ class AE(torch.nn.Module):
 
 
 if __name__=='__main__':
+    parser = argparse.ArgumentParser(description="Choose device")
+    parser.add_argument('-n','--device', default='cpu')
+    args = parser.parse_args()
+    print(args)
+    device = args.device
+    print(device)
+
     txt_chg = np.load('Data/txt_chg_AE.npz')
     tensor_tc = torch.tensor(txt_chg['txt_chg'])
     tensor_tc = tensor_tc.type(torch.float)
@@ -69,8 +77,6 @@ if __name__=='__main__':
     outputs = []
     losses = []
 
-    device = set_device()
-    print(device)
 
     if 'AE_checkpoint.pth' in os.listdir('models/'):
         checkpoint = torch.load('models/AE_checkpoint.pth')
