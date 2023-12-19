@@ -23,7 +23,7 @@ def preprocess(log):
   # TEXT CHANGES
       print('Encode text_changes...')
       text_change = tf.keras.utils.pad_sequences(
-          list(map(lambda x:parse_text_change(x),tqdm(log.text_change,desc='Encode text change:'))),
+          list(map(lambda x:parse_text_change(x),tqdm(log['text_change'],desc='Encode text change:'))),
           maxlen=117,
           dtype='float16',
           padding='post',
