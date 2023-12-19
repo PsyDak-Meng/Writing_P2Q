@@ -90,7 +90,7 @@ if __name__=='__main__':
         epoch_loss = 0
 
     print(f'epoch: {last_epoch}, training loss: {epoch_loss}')
-    for epoch in range(last_epoch,epochs):
+    for epoch in range(last_epoch+1,epochs):
         for step,(x,y) in enumerate(tqdm(tc_dataloader)):
             x = x.to(device)
             y = y.to(device)
