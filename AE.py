@@ -48,6 +48,21 @@ class AE(torch.nn.Module):
 		return decoded
 
 
+def optimizer_to(optim, device):
+    for param in optim.state.values():
+        # Not sure there are any global tensors in the state dict
+        if isinstance(param, torch.Tensor):
+            param.data = param.data.to(device)
+            if param._grad is not None:
+                param._grad.data = param._grad.data.to(device)
+        elif isinstance(param, dict):
+            for subparam in param.values():
+                if isinstance(subparam, torch.Tensor):
+                    subparam.data = subparam.data.to(device)
+                    if subparam._grad is not None:
+                        subparam._grad.data = subparam._grad.data.to(device)
+
+
 if __name__=='__main__':
     parser = argparse.ArgumentParser(description="Choose device")
     parser.add_argument('-n','--device', default='cuda')
@@ -81,6 +96,8 @@ if __name__=='__main__':
         checkpoint = torch.load('models/AE_checkpoint.pth')
         model.load_state_dict(checkpoint['model_state_dict'])
         optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+        # Send to GPU
+        optimizer_to(optimizer,device)
         last_epoch = checkpoint['epoch']
         epoch_loss = checkpoint['loss']
         model.train()
@@ -89,11 +106,11 @@ if __name__=='__main__':
         epoch_loss = 0
 
     print(f'epoch: {last_epoch}, training loss: {epoch_loss}')
+    model = model.to(device)
     for epoch in range(last_epoch+1,epochs):
         for step,(x,y) in enumerate(tqdm(tc_dataloader)):
             x = x.to(device)
             y = y.to(device)
-            model = model.to(device)
 
             reconstructed = model(x)
             loss = loss_function(reconstructed, y)
