@@ -47,14 +47,14 @@ class AE(torch.nn.Module):
 		return decoded
 
 
-if __name__=='__main':
-	txt_chg = np.load('Data/txt_chg_AE.npz')
-	tensor_tc = torch.tensor(txt_chg['txt_chg'])
-	tensor_tc = tensor_tc.type(torch.float)
-	tc_dataset = TensorDataset(tensor_tc,tensor_tc) # create your datset
-	tc_dataloader = DataLoader(tc_dataset,batch_size=512) # create your dataloader
-	
-    # Model Initialization
+if __name__=='__main__':
+    txt_chg = np.load('Data/txt_chg_AE.npz')
+    tensor_tc = torch.tensor(txt_chg['txt_chg'])
+    tensor_tc = tensor_tc.type(torch.float)
+    tc_dataset = TensorDataset(tensor_tc,tensor_tc) # create your datset
+    tc_dataloader = DataLoader(tc_dataset,batch_size=512) # create your dataloader
+    
+    # Initialize Model
     model = AE()
 
     # Validation using MSE Loss function
