@@ -50,7 +50,7 @@ class AE(torch.nn.Module):
 
 if __name__=='__main__':
     parser = argparse.ArgumentParser(description="Choose device")
-    parser.add_argument('-n','--device', default='cpu')
+    parser.add_argument('-n','--device', default='cuda')
     args = parser.parse_args()
     print(args)
     device = args.device
@@ -76,7 +76,6 @@ if __name__=='__main__':
     epochs = 20
     outputs = []
     losses = []
-
 
     if 'AE_checkpoint.pth' in os.listdir('models/'):
         checkpoint = torch.load('models/AE_checkpoint.pth')
