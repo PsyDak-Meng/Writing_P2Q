@@ -106,9 +106,8 @@ class SelfAttention(nn.Module):
         scores = torch.matmul(queries, keys.transpose(0,1)) / (self.input_dim ** 0.5)
         attention = self.softmax(scores)
         weighted = torch.matmul(attention, values)
-        output = self.output(weighted)
 
-        return output
+        return weighted
     
 class P2Q(nn.Module):
     def __init__(self, input_dim, hidden_dim):
@@ -122,9 +121,19 @@ class P2Q(nn.Module):
                                 dropout=0,
                                 bidirectional=True)
         self.self_attn = SelfAttention(input_dim=hidden_dim*2)
+        self.bilstm_1 = nn.LSTM(hidden_dim*2,
+                                hidden_dim,
+                                num_layers=2,
+                                bias=True,
+                                batch_first=False,
+                                dropout=0,
+                                bidirectional=True)
+
 
     def forward(self, x):
         x,bi_hidden = self.bilstm_1(x)
+        x = self.self_attn(x)
+        x, bi_hidden = self.bilstm_2(x)
         x = self.self_attn(x)
         return x
     
