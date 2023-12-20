@@ -102,7 +102,7 @@ class SelfAttention(nn.Module):
         values = self.value(x)
         scores = torch.matmul(queries, keys.transpose(0,1)) / (self.input_dim ** 0.5)
         attention = self.softmax(scores)
-        weighted = torch.bmm(attention, values)
+        weighted = torch.matmul(attention, values)
         output = self.output(weighted)
 
         return output
