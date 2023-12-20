@@ -105,7 +105,7 @@ def preprocess_logs(log):
     
 if __name__ =='__main__':
     parser = argparse.ArgumentParser(description="Choose device")
-    parser.add_argument('-n','--device', default='cuda')
+    parser.add_argument('-n','--device', default='cpu')
     args = parser.parse_args()
     print(args)
     device = args.device
