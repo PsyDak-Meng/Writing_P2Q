@@ -39,7 +39,7 @@ def infer_AE(PATH):
         x = x.to(device)
         txt_chg_ae.append(ae.encoder(x))
 
-    txt_chg_ae = torch.stack(txt_chg_ae)
+    txt_chg_ae = torch.stack(txt_chg_ae,dim=1)
     print(txt_chg_ae.size())
     torch.save(txt_chg_ae, 'txt_chg_ae.pt')
 
