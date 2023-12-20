@@ -55,6 +55,9 @@ def load_data():
     #x_cat.reset_index(drop=True, inplace=True)
     print(x_cat.head())
 
+    train_scores = pd.read_csv('Data/train_scores.csv')
+    print(list(x_cat.index) == list(train_scores.index))
+
 
 
 
