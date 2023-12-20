@@ -118,12 +118,10 @@ class P2Q(nn.Module):
                                 batch_first=False,
                                 dropout=0,
                                 bidirectional=True)
-        self.self_attn = SelfAttention(input_dim=input_dim)
+        self.self_attn = SelfAttention(input_dim=input_dim*2)
 
     def forward(self, x):
-        x_1,x_2 = self.bilstm_1(x)
-        print(type(x_1),type(x_2))
-        x = torch.stack((x_1,x_2),dim=2)
+        x,bi_hidden = self.bilstm_1(x)
         x = self.self_attn(x)
         return x
     
