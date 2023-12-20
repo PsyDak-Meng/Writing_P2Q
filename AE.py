@@ -64,6 +64,7 @@ def optimizer_to(optim, device):
 
 
 if __name__=='__main__':
+    os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:512"
     parser = argparse.ArgumentParser(description="Choose device")
     parser.add_argument('-n','--device', default='cuda')
     args = parser.parse_args()
@@ -75,7 +76,7 @@ if __name__=='__main__':
     tensor_tc = torch.tensor(txt_chg['txt_chg'])
     tensor_tc = tensor_tc.type(torch.float).to('cpu')
     tc_dataset = TensorDataset(tensor_tc,tensor_tc) # create your datset
-    tc_dataloader = DataLoader(tc_dataset,batch_size=512) # create your dataloader
+    tc_dataloader = DataLoader(tc_dataset,batch_size=256) # create your dataloader
     
     # Initialize Model
     model = AE()
@@ -99,13 +100,13 @@ if __name__=='__main__':
         # Send to GPU
         optimizer_to(optimizer,device)
         last_epoch = checkpoint['epoch']
-        epoch_loss = checkpoint['loss']
+        last_epoch_loss = checkpoint['loss']
         model.train()
     else:
         last_epoch = 0
-        epoch_loss = 0
+        last_epoch_loss = 0
 
-    print(f'epoch: {last_epoch}, training loss: {epoch_loss}')
+    print(f'epoch: {last_epoch}, training loss: {last_epoch_loss}')
     model = model.to(device)
     for epoch in range(last_epoch+1,epochs):
         for step,(x,y) in enumerate(tqdm(tc_dataloader)):
@@ -124,14 +125,15 @@ if __name__=='__main__':
     
         epoch_loss = sum(losses)/len(losses)
         print(f'epoch: {epoch}, training loss: {epoch_loss}')
-        
+
         # Save Checkpoint
-        torch.save({
-                    'epoch': epoch,
-                    'model_state_dict': model.state_dict(),
-                    'optimizer_state_dict': optimizer.state_dict(),
-                    'loss': epoch_loss,
-                    }, 'models/AE_checkpoint.pth')
+        if (last_epoch_loss-epoch_loss)<0:
+            torch.save({
+                        'epoch': epoch,
+                        'model_state_dict': model.state_dict(),
+                        'optimizer_state_dict': optimizer.state_dict(),
+                        'loss': epoch_loss,
+                        }, 'models/AE_checkpoint.pth')
         
         torch.cuda.empty_cache()
 
