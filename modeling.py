@@ -25,8 +25,10 @@ def optimizer_to(optim, device):
 def load_data():
     train_logs= pd.read_csv('Data/train_logs.csv')
     id = np.array(train_logs['id'])
+    id = id.reshape(id.shape[0],1)
 
     tc = torch.load('Data/txt_chg_ae.pt').detach().numpy()
+   
     x = np.load('Data/x_train.npz') 
     act = x['act']
     up = x['up']
