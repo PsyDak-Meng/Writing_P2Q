@@ -1,12 +1,15 @@
 import pandas as pd
 from transformers import AutoTokenizer, TFAutoModel
 from collections import Counter
+from torch.utils.data import TensorDataset, DataLoader
 from tqdm import tqdm
 from sklearn.preprocessing import OneHotEncoder
 import numpy as np
 import json, os
-import tensorflow as tf
 import matplotlib.pyplot as plt
+from AE import AE
+import torch
+import argparse
 
 
 train_logs = pd.read_csv('Data/train_logs.csv')
@@ -15,20 +18,36 @@ test_logs = pd.read_csv('Data/test_logs.csv')
 
 print(train_logs.head())
 
-def parse_text_change(text):
-    text_embed = text.split(' ') # embed by length
-    for i in range(len(text_embed)):
-        if 'q' in text_embed[i]:
-            text_embed[i] = len(text_embed[i])
-        elif text_embed[i] == 'NoChange':
-            text_embed[i] = 0
-        else:
-            text_embed[i] = 0.5
-    return text_embed
+def infer_AE(PATH):
+    global device 
+    txt_chg = np.load('Data/txt_chg_AE.npz')
+    tensor_tc = torch.tensor(txt_chg['txt_chg'])
+    tensor_tc = tensor_tc.type(torch.float).to('cpu')
+    tc_dataset = TensorDataset(tensor_tc,tensor_tc) # create your datset
+    tc_dataloader = DataLoader(tc_dataset,batch_size=256) # create your dataloader
+
+    ae = AE()
+    ae.load_state_dict(torch.load(PATH))
+    ae.eval()
+    txt_chg_ae = []
+    
+
+    for step,(x,y) in enumerate(tqdm(tc_dataloader)):
+        x = x.to(device)
+        txt_chg_ae.append(ae.decoder())
+
+    txt_chg_ae = torch.stack(txt_chg_ae)
+    print(txt_chg_ae.size())
+    torch.save(txt_chg_ae, 'txt_chg_ae.pt')
+
+
 
 def preprocess_logs(log):
     #enc = OneHotEncoder()
-    log['mean_time'] = (log['down_time']+['log.up_time'])/2
+    log['mean_time'] = (log['down_time']+log['up_time'])/2
+
+    # TEXT CHANGE
+    infer_AE('models/AE_checkpoint.pth')
 
     # ACTIVITY
     print('Encoding activity...')
@@ -39,8 +58,6 @@ def preprocess_logs(log):
         act_np = np.zeros((log.shape[0],len(act_dict)))
         for i in tqdm(range(len(act))):
             act_np[i,act_dict[act[i]]] = 1
-        with open('Data/Act_onehot.npy', 'wb') as f:
-            np.save(f, act_np)
         with open("Data/Act.json", "w") as outfile:
             json.dump(act_dict, outfile)
     
@@ -71,36 +88,22 @@ def preprocess_logs(log):
         for i in tqdm(range(len(up))):
             up_np[i,event_dict[up[i]]] = 1
 
-        with open('Data/DownEvent_onehot.npy', 'wb') as f:
-            np.save(f, down_np)
-        with open('Data/UpEvent_onehot.npy', 'wb') as f:
-            np.save(f, up_np)
+
         with open("Data/Event.json", "w") as outfile:
             json.dump(event_dict, outfile)
-
-
-    # TEXT CHANGES
-    print('Encode text_changes...')
-    if 'TextChange_LengthCoded.npy' not in os.listdir('Data/'):
-        text_change = tf.keras.utils.pad_sequences(
-            list(map(lambda x:parse_text_change(x),tqdm(log.text_change,desc='Encode text change:'))),
-            maxlen=250,
-            dtype='int32',
-            padding='post',
-            truncating='post',
-            value=0.0
-        )
-        text_change = np.array(text_change)
-        print(text_change.shape)
-        with open('Data/TextChange_LengthCoded.npy', 'wb') as f:
-            np.save(f, text_change)
 
     # REST
     print('Encoding rest...')
     if 'rest.npy.npy' not in os.listdir('Data/'):
         rest = log[['id','event_id','mean_time','action_time','cursor_position','word_count']].to_numpy()
-        with open('Data/rest.npy', 'wb') as f:
-            np.save(f, rest)
+
+    with open('Data/x_train.npz', 'wb') as f:
+        np.savez(f, act=act_np, up=up_np,down=down_np,rest=rest)
     
 if __name__ =='__main__':
+    parser = argparse.ArgumentParser(description="Choose device")
+    parser.add_argument('-n','--device', default='cuda')
+    args = parser.parse_args()
+    print(args)
+    device = args.device
     preprocess_logs(train_logs)
