@@ -124,6 +124,7 @@ if __name__=='__main__':
     
         epoch_loss = sum(losses)/len(losses)
         print(f'epoch: {epoch}, training loss: {epoch_loss}')
+        
         # Save Checkpoint
         torch.save({
                     'epoch': epoch,
@@ -131,6 +132,8 @@ if __name__=='__main__':
                     'optimizer_state_dict': optimizer.state_dict(),
                     'loss': epoch_loss,
                     }, 'models/AE_checkpoint.pth')
+        
+        torch.cuda.empty_cache()
 
 
 
