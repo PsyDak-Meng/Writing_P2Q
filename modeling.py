@@ -27,7 +27,7 @@ def load_data():
     print(psutil.virtual_memory())
     train_logs= pd.read_csv('Data/train_logs.csv')
     id = np.array(train_logs['id'])
-    id = id.reshape(id.shape[0],1)
+    #id = id.reshape(id.shape[0],1)
     print('id loaded...',id.shape)
 
     tc = torch.load('Data/txt_chg_ae.pt').detach().numpy()
@@ -41,13 +41,14 @@ def load_data():
     del x
 
     size = id.shape[0]
-    x_cat = np.zeros((size,1+32+47+5))
+    x_cat = np.zeros((size,1+32+6+47+5))
 
     print('Concatenating...')
     x_cat[:,0] = id
     x_cat[:,1:32] = tc
-    x_cat[:,33:33+46] = down
-    x_cat[:,33+47:33+47+4] = rest
+    x_cat[:,33:33+5] = act
+    x_cat[:,33+6:33+6+46] = down
+    x_cat[:,33+6+47:33+6+47+4] = rest
 
     x_cat = pd.DataFrame(x_cat)
     x_cat = pd.DataFrame(x_cat.groupby(by="id", dropna=False).mean(),reset_index=True)
