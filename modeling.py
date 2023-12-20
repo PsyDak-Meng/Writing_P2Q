@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional
+from torch.utils.data import TensorDataset, DataLoader
 import os
 import argparse
 from tqdm import tqdm
@@ -62,16 +63,12 @@ def load_data():
     for idx in x_cat.index:
         train_scores.append(scores[idx])
     train_scores = np.array(train_scores)
-    train_scores.reshape(train_scores.shape[0],1)
+    train_scores = train_scores.reshape(train_scores.shape[0],1)
     print('y:',train_scores.shape)
     x_cat  = np.array(x_cat)
     print('x:',x_cat.shape)
 
-
-
-
-
-    
+    return x_cat,train_scores
 
 
 
@@ -113,11 +110,11 @@ class P2Q(nn.Module):
     
 if __name__=='__main__':
     load_data()
-    """ os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:256"
+    os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:256"
     parser = argparse.ArgumentParser(description="Choose device")
     parser.add_argument('-n','--device', default='cuda')
     parser.add_argument('-l','--lr', default=0.001)
-    arser.add_argument('-e','--epoch', default=10)
+    parser.add_argument('-e','--epoch', default=10)
     args = parser.parse_args()
     print(args)
     device = args.device
@@ -125,7 +122,7 @@ if __name__=='__main__':
 
     tensor_x, tensor_y = load_data()
     dataset = TensorDataset(tensor_x, tensor_y ) # create your datset
-    dataloader = DataLoader(tc_dataset,batch_size=256) # create your dataloader
+    dataloader = DataLoader(dataset,batch_size=256) # create your dataloader
     
     # Initialize Model
     model = P2Q()
@@ -173,7 +170,7 @@ if __name__=='__main__':
             # Storing the losses in a list for plotting
             losses += loss
     
-        epoch_loss = losses/(tensor_tc.size(dim=0)/256)
+        epoch_loss = losses/(tensor_y.size(dim=0)/256)
         print(f'epoch: {epoch}, training loss: {epoch_loss}')
         print(f'One step: {torch.cuda.memory_allocated(0)}')
 
@@ -189,4 +186,3 @@ if __name__=='__main__':
                         }, 'models/AE_checkpoint.pth')
         
         torch.cuda.empty_cache()
- """
