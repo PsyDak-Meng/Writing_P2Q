@@ -40,6 +40,9 @@ def load_data():
     x = pd.DataFrame(x.groupby(by="id", dropna=False).mean(),reset_index=True)
     print(x.head())
 
+
+
+
     
 
 
@@ -86,29 +89,28 @@ if __name__=='__main__':
     parser = argparse.ArgumentParser(description="Choose device")
     parser.add_argument('-n','--device', default='cuda')
     parser.add_argument('-l','--lr', default=0.001)
+    arser.add_argument('-e','--epoch', default=10)
     args = parser.parse_args()
     print(args)
     device = args.device
     print(device)
 
-    txt_chg = np.load('Data/txt_chg_AE.npz')
-    tensor_tc = torch.tensor(txt_chg['txt_chg'])
-    tensor_tc = tensor_tc.type(torch.float).to('cpu')
-    tc_dataset = TensorDataset(tensor_tc,tensor_tc) # create your datset
-    tc_dataloader = DataLoader(tc_dataset,batch_size=256) # create your dataloader
+    tensor_x, tensor_y = load_data()
+    dataset = TensorDataset(tensor_x, tensor_y ) # create your datset
+    dataloader = DataLoader(tc_dataset,batch_size=256) # create your dataloader
     
     # Initialize Model
-    model = 
+    model = P2Q()
 
     # Validation using MSE Loss function
     loss_function = torch.nn.MSELoss()
 
-    # Using an Adam Optimizer with lr = 0.1
+    # Using an Adam Optimizer with lr = 0.001
     optimizer = torch.optim.Adam(model.parameters(),
                                 lr = float(args.lr),
                                 weight_decay = 1e-8)
 
-    epochs = 20
+    epochs = args.epoch
     outputs = []
 
     if 'P2Q_checkpoint.pth' in os.listdir('models/'):
@@ -129,12 +131,12 @@ if __name__=='__main__':
     model = model.to(device)
     for epoch in range(last_epoch+1,epochs):
         losses = 0
-        for step,(x,y) in enumerate(tqdm(tc_dataloader)):
+        for step,(x,y) in enumerate(tqdm(dataloader)):
             x = x.to(device)
             y = y.to(device)
 
-            reconstructed = model(x)
-            loss = loss_function(reconstructed, y)
+            y_pred = model(x)
+            loss = loss_function(y_pred, y)
             
             optimizer.zero_grad()
             loss.backward()

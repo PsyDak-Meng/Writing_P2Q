@@ -96,10 +96,10 @@ def preprocess_logs(log):
 
         # REST
         print('Encoding rest...')
-        rest = log[['id','event_id','mean_time','action_time','cursor_position','word_count']].to_numpy()
+        rest_np = np.array(log[['mean_time','action_time','cursor_position','word_count']])
 
         with open('Data/x_train.npz', 'wb') as f:
-            np.savez(f, act=act_np, up=up_np,down=down_np,rest=rest)
+            np.savez(f, act=act_np, up=up_np,down=down_np,rest=rest_np)
     
 if __name__ =='__main__':
     parser = argparse.ArgumentParser(description="Choose device")
