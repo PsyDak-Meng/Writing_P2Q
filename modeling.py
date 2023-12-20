@@ -36,7 +36,7 @@ def load_data():
     x = np.load('Data/x_train.npz') 
     print('np loaded...',x['down'].shape,x['rest'].shape)
 
-    psutil.virtual_memory()
+    print(psutil.virtual_memory())
 
     x = np.hstack((id,x['act'],x['down'],tc,x['rest']))
     print(x.shape)
