@@ -99,7 +99,7 @@ def preprocess_logs(log):
 
         # REST
         print('Encoding rest...')
-        rest_np = np.array(log[['mean_time','action_time','cursor_position','word_count']])
+        rest_np = np.array(log[['up=down','mean_time','action_time','cursor_position','word_count']])
 
         with open('Data/x_train.npz', 'wb') as f:
             np.savez(f, act=act_np, down=down_np,rest=rest_np)
