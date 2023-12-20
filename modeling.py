@@ -38,7 +38,7 @@ def load_data():
 
     print(psutil.virtual_memory())
 
-    x = np.hstack((id,x['act'],x['down'],tc,x['rest']))
+    x = np.concatenate((id,x['act'],x['down'],tc,x['rest']),axis=1)
     print(x.shape)
 
     x = pd.DataFrame(x)
