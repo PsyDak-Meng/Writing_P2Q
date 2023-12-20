@@ -91,7 +91,7 @@ if __name__=='__main__':
 
     epochs = 20
     outputs = []
-    losses = []
+    losses = 0
 
     if 'AE_checkpoint.pth' in os.listdir('models/'):
         checkpoint = torch.load('models/AE_checkpoint.pth')
@@ -122,9 +122,9 @@ if __name__=='__main__':
             optimizer.step()
             
             # Storing the losses in a list for plotting
-            losses.append(loss)
+            losses += loss
     
-        epoch_loss = sum(losses)/len(losses)
+        epoch_loss = losses/tensor_tc.size(dim=0)
         print(f'epoch: {epoch}, training loss: {epoch_loss}')
         print(f'One step: {torch.cuda.memory_allocated(0)}')
 
