@@ -1,11 +1,46 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
+import torch.nn.functional
+import os
+import argparse
+from tqdm import tqdm
+import numpy as np
+import pandas as pd
 
-def set_device():
-    print(torch.cuda.device_count())
-    device = input('Choose device:')
-    return device
+def optimizer_to(optim, device):
+    for param in optim.state.values():
+        # Not sure there are any global tensors in the state dict
+        if isinstance(param, torch.Tensor):
+            param.data = param.data.to(device)
+            if param._grad is not None:
+                param._grad.data = param._grad.data.to(device)
+        elif isinstance(param, dict):
+            for subparam in param.values():
+                if isinstance(subparam, torch.Tensor):
+                    subparam.data = subparam.data.to(device)
+                    if subparam._grad is not None:
+                        subparam._grad.data = subparam._grad.data.to(device)
+
+
+def load_data():
+    train_logs= pd.read_csv('Data/train_logs.csv')
+    id = np.array(train_logs['id'])
+
+    tc = torch.load('Data/txt_chg_ae.pt').numpy()
+    x = np.load('Data/x_train.npz') 
+    act = x['act']
+    up = x['up']
+    down = x['down']
+    rest = x['rest']
+
+    x = np.hstack((id,act,up,down,tc,rest))
+    print(x.shape)
+
+    x = pd.DataFrame(x)
+    x = pd.DataFrame(x.groupby(by="id", dropna=False).mean(),reset_index=True)
+    print(x.head())
+
+    
 
 
 
@@ -38,11 +73,90 @@ class P2Q(nn.Module):
                                 batch_first=False,
                                 dropout=0,
                                 bidirectional=True)
-        self.s_attn = SelfAttention()
+        self.self_attn = SelfAttention()
 
     def forward(self, x):
         x = self.bilstm_1(x)
-        x = self.s_attn(x)
+        x = self.self_attn(x)
         return x
     
-    def train(model):
+if __name__=='__main__':
+    load_data()
+    """ os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:256"
+    parser = argparse.ArgumentParser(description="Choose device")
+    parser.add_argument('-n','--device', default='cuda')
+    parser.add_argument('-l','--lr', default=0.001)
+    args = parser.parse_args()
+    print(args)
+    device = args.device
+    print(device)
+
+    txt_chg = np.load('Data/txt_chg_AE.npz')
+    tensor_tc = torch.tensor(txt_chg['txt_chg'])
+    tensor_tc = tensor_tc.type(torch.float).to('cpu')
+    tc_dataset = TensorDataset(tensor_tc,tensor_tc) # create your datset
+    tc_dataloader = DataLoader(tc_dataset,batch_size=256) # create your dataloader
+    
+    # Initialize Model
+    model = 
+
+    # Validation using MSE Loss function
+    loss_function = torch.nn.MSELoss()
+
+    # Using an Adam Optimizer with lr = 0.1
+    optimizer = torch.optim.Adam(model.parameters(),
+                                lr = float(args.lr),
+                                weight_decay = 1e-8)
+
+    epochs = 20
+    outputs = []
+
+    if 'P2Q_checkpoint.pth' in os.listdir('models/'):
+        checkpoint = torch.load('models/P2Q_checkpoint.pth')
+        model.load_state_dict(checkpoint['model_state_dict'])
+        optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+        # Send to GPU
+        optimizer_to(optimizer,device)
+        last_epoch = checkpoint['epoch']
+        last_epoch_loss = checkpoint['loss']
+        model.train()
+    else:
+        last_epoch = 0
+        last_epoch_loss = np.inf
+
+    print(f'epoch: {last_epoch}, training loss: {last_epoch_loss}')
+    print(f'Before training: {torch.cuda.memory_allocated(0)}')
+    model = model.to(device)
+    for epoch in range(last_epoch+1,epochs):
+        losses = 0
+        for step,(x,y) in enumerate(tqdm(tc_dataloader)):
+            x = x.to(device)
+            y = y.to(device)
+
+            reconstructed = model(x)
+            loss = loss_function(reconstructed, y)
+            
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+            
+            # Storing the losses in a list for plotting
+            losses += loss
+    
+        epoch_loss = losses/(tensor_tc.size(dim=0)/256)
+        print(f'epoch: {epoch}, training loss: {epoch_loss}')
+        print(f'One step: {torch.cuda.memory_allocated(0)}')
+
+        # Save Checkpoint
+        if epoch_loss<last_epoch_loss:
+            last_epoch_loss = epoch_loss
+            print(f'Saving epoch {epoch}')
+            torch.save({
+                        'epoch': epoch,
+                        'model_state_dict': model.state_dict(),
+                        'optimizer_state_dict': optimizer.state_dict(),
+                        'loss': epoch_loss,
+                        }, 'models/AE_checkpoint.pth')
+        
+        torch.cuda.empty_cache()
+ """
