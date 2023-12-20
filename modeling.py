@@ -122,6 +122,7 @@ class P2Q(nn.Module):
 
     def forward(self, x):
         x_1,x_2 = self.bilstm_1(x)
+        print(type(x_1),type(x_2))
         x = torch.stack((x_1,x_2),dim=2)
         x = self.self_attn(x)
         return x
