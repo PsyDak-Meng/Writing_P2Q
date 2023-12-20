@@ -73,7 +73,7 @@ if __name__=='__main__':
 
     txt_chg = np.load('Data/txt_chg_AE.npz')
     tensor_tc = torch.tensor(txt_chg['txt_chg'])
-    tensor_tc = tensor_tc.type(torch.float)
+    tensor_tc = tensor_tc.type(torch.float).to('cpu')
     tc_dataset = TensorDataset(tensor_tc,tensor_tc) # create your datset
     tc_dataloader = DataLoader(tc_dataset,batch_size=512) # create your dataloader
     
@@ -106,7 +106,7 @@ if __name__=='__main__':
         epoch_loss = 0
 
     print(f'epoch: {last_epoch}, training loss: {epoch_loss}')
-    model = model.to(device)
+
     for epoch in range(last_epoch+1,epochs):
         for step,(x,y) in enumerate(tqdm(tc_dataloader)):
             x = x.to(device)
