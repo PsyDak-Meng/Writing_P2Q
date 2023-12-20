@@ -134,11 +134,15 @@ if __name__=='__main__':
     parser.add_argument('-n','--device', default='cuda')
     parser.add_argument('-l','--lr', default=0.001)
     parser.add_argument('-e','--epoch', default=10)
+    parser.add_argument('-d','--delete', False)
     args = parser.parse_args()
     print(args)
     device = args.device
     print(device)
 
+    if args.delete == 'True':
+        os.remove('models/P2Q_checkpoint.pth')
+    
     tensor_x, tensor_y = load_data()
     tensor_x = tensor_x.type(torch.float32)
     tensor_y = tensor_y.type(torch.float32)
@@ -146,7 +150,7 @@ if __name__=='__main__':
     dataloader = DataLoader(dataset,batch_size=256) # create your dataloader
     
     # Initialize Model
-    model = P2Q(input_dim=90,hidden_dim=512)
+    model = P2Q(input_dim=90,hidden_dim=1024)
 
     # Validation using MSE Loss function
     loss_function = RMSELoss()
@@ -204,6 +208,6 @@ if __name__=='__main__':
                         'model_state_dict': model.state_dict(),
                         'optimizer_state_dict': optimizer.state_dict(),
                         'loss': epoch_loss,
-                        }, 'models/AE_checkpoint.pth')
+                        }, 'models/P2Q_checkpoint.pth')
         
         torch.cuda.empty_cache()
