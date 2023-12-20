@@ -52,8 +52,7 @@ def load_data():
     x_cat = pd.DataFrame(x_cat)
     x_cat['id'] = id
     x_cat = pd.DataFrame(x_cat.groupby(by="id", dropna=False).mean())
-    #x_cat.reset_index(drop=True, inplace=True)
-    print(x_cat.head())
+    #print(x_cat.head())
 
     train_scores = pd.read_csv('Data/train_scores.csv')
     scores = {}
@@ -63,7 +62,11 @@ def load_data():
     for idx in x_cat.index:
         train_scores.append(scores[idx])
     train_scores = np.array(train_scores)
-    print(train_scores.shape)
+    train_scores.reshape(train_scores.shape[0],1)
+    print('y:',train_scores.shape)
+    x_cat  = np.array(x_cat)
+    print('x:',x_cat.shape)
+
 
 
 
