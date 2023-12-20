@@ -13,10 +13,10 @@ import argparse
 
 
 train_logs = pd.read_csv('Data/train_logs.csv')
-train_scores = pd.read_csv('Data/train_scores.csv')
-test_logs = pd.read_csv('Data/test_logs.csv')
+#train_scores = pd.read_csv('Data/train_scores.csv')
+#test_logs = pd.read_csv('Data/test_logs.csv')
 
-print(train_logs.head())
+#print(train_logs.head())
 
 def infer_AE(PATH):
     global device 
@@ -36,7 +36,7 @@ def infer_AE(PATH):
 
     for step,(x,y) in enumerate(tqdm(tc_dataloader)):
         x = x.to(device)
-        txt_chg_ae.append(ae.decoder())
+        txt_chg_ae.append(ae.decoder(x))
 
     txt_chg_ae = torch.stack(txt_chg_ae)
     print(txt_chg_ae.size())
