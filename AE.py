@@ -113,12 +113,9 @@ if __name__=='__main__':
         for step,(x,y) in enumerate(tqdm(tc_dataloader)):
             x = x.to(device)
             y = y.to(device)
-            print(f'Load x,y: {torch.cuda.memory_allocated(0)}')
 
             reconstructed = model(x)
-            print(f'Feed forward: {torch.cuda.memory_allocated(0)}')
             loss = loss_function(reconstructed, y)
-            print(f'Calculate loss: {torch.cuda.memory_allocated(0)}')
             
             optimizer.zero_grad()
             loss.backward()
@@ -126,10 +123,10 @@ if __name__=='__main__':
             
             # Storing the losses in a list for plotting
             losses.append(loss)
-            print(f'GD step: {torch.cuda.memory_allocated(0)}')
     
         epoch_loss = sum(losses)/len(losses)
         print(f'epoch: {epoch}, training loss: {epoch_loss}')
+        print(f'One step: {torch.cuda.memory_allocated(0)}')
 
         # Save Checkpoint
         if (last_epoch_loss-epoch_loss)>0:
