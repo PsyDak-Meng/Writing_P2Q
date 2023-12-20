@@ -153,7 +153,7 @@ if __name__=='__main__':
                                 lr = float(args.lr),
                                 weight_decay = 1e-8)
 
-    epochs = args.epoch
+    epochs = int(args.epoch)
     outputs = []
 
     if 'P2Q_checkpoint.pth' in os.listdir('models/'):
