@@ -64,7 +64,7 @@ def optimizer_to(optim, device):
 
 
 if __name__=='__main__':
-    os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:512"
+    os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:256"
     parser = argparse.ArgumentParser(description="Choose device")
     parser.add_argument('-n','--device', default='cuda')
     args = parser.parse_args()
@@ -107,14 +107,18 @@ if __name__=='__main__':
         last_epoch_loss = 0
 
     print(f'epoch: {last_epoch}, training loss: {last_epoch_loss}')
+    print(f'Before training: {torch.cuda.memory_allocated(0)}')
     model = model.to(device)
     for epoch in range(last_epoch+1,epochs):
         for step,(x,y) in enumerate(tqdm(tc_dataloader)):
             x = x.to(device)
             y = y.to(device)
+            print(f'Load x,y: {torch.cuda.memory_allocated(0)}')
 
             reconstructed = model(x)
+            print(f'Feed forward: {torch.cuda.memory_allocated(0)}')
             loss = loss_function(reconstructed, y)
+            print(f'Calculate loss: {torch.cuda.memory_allocated(0)}')
             
             optimizer.zero_grad()
             loss.backward()
@@ -122,12 +126,13 @@ if __name__=='__main__':
             
             # Storing the losses in a list for plotting
             losses.append(loss)
+            print(f'GD step: {torch.cuda.memory_allocated(0)}')
     
         epoch_loss = sum(losses)/len(losses)
         print(f'epoch: {epoch}, training loss: {epoch_loss}')
 
         # Save Checkpoint
-        if (last_epoch_loss-epoch_loss)<0:
+        if (last_epoch_loss-epoch_loss)>0:
             torch.save({
                         'epoch': epoch,
                         'model_state_dict': model.state_dict(),
