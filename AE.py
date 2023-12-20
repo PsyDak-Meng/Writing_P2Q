@@ -67,6 +67,7 @@ if __name__=='__main__':
     os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:256"
     parser = argparse.ArgumentParser(description="Choose device")
     parser.add_argument('-n','--device', default='cuda')
+    parser.add_argument('-l','--lr', default=0.001)
     args = parser.parse_args()
     print(args)
     device = args.device
@@ -86,7 +87,7 @@ if __name__=='__main__':
 
     # Using an Adam Optimizer with lr = 0.1
     optimizer = torch.optim.Adam(model.parameters(),
-                                lr = 1e-3,
+                                lr = args.lr,
                                 weight_decay = 1e-8)
 
     epochs = 20
