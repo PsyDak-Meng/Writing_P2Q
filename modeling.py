@@ -38,11 +38,11 @@ def load_data():
 
     print(psutil.virtual_memory())
 
-    x = np.concatenate((id,x['act'],x['down'],tc,x['rest']),axis=1)
+    x_cat = np.hstack((id,x['act'],x['down'],tc,x['rest']))
     print(x.shape)
 
-    x = pd.DataFrame(x)
-    x = pd.DataFrame(x.groupby(by="id", dropna=False).mean(),reset_index=True)
+    x_cat = pd.DataFrame(x_cat)
+    x_cat = pd.DataFrame(x_cat.groupby(by="id", dropna=False).mean(),reset_index=True)
     print(x.head())
 
 
