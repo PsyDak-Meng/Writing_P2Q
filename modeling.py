@@ -134,7 +134,7 @@ if __name__=='__main__':
     parser.add_argument('-n','--device', default='cuda')
     parser.add_argument('-l','--lr', default=0.001)
     parser.add_argument('-e','--epoch', default=10)
-    parser.add_argument('-d','--delete', 'False')
+    parser.add_argument('-d','--delete', default = 'False')
     args = parser.parse_args()
     print(args)
     device = args.device
