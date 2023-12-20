@@ -60,8 +60,8 @@ def load_data():
     for idx, row in train_scores.iterrows():
         scores[row['id']] = row['score']
     train_scores = []
-    for idx, row in x_cat.iterrows():
-        train_scores.append(scores[row['id']])
+    for idx in x_cat.index:
+        train_scores.append(scores[idx])
     train_scores = np.array(train_scores)
     print(train_scores.shape)
 
