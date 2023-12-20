@@ -92,7 +92,7 @@ class SelfAttention(nn.Module):
         self.query = nn.Linear(input_dim, input_dim)
         self.key = nn.Linear(input_dim, input_dim)
         self.value = nn.Linear(input_dim, input_dim)
-        self.softmax = nn.Softmax(dim=90)
+        self.softmax = nn.Softmax(dim=1)
         self.linear = nn.Linear(input_dim,input_dim)
         self.output = nn.Linear(input_dim,1)
         
