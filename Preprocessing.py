@@ -21,27 +21,28 @@ train_logs = pd.read_csv('Data/train_logs.csv')
 def infer_AE(PATH):
     global device 
 
-    txt_chg = np.load('Data/txt_chg_AE.npz')
-    tensor_tc = torch.tensor(txt_chg['txt_chg'])
-    tensor_tc = tensor_tc.type(torch.float).to('cpu')
-    tc_dataset = TensorDataset(tensor_tc,tensor_tc) # create your datset
-    tc_dataloader = DataLoader(tc_dataset,batch_size=256) # create your dataloader
+    if 'txt_chg_ae.pt' not in os.listdir('/Data'):
+        txt_chg = np.load('Data/txt_chg_AE.npz')
+        tensor_tc = torch.tensor(txt_chg['txt_chg'])
+        tensor_tc = tensor_tc.type(torch.float).to('cpu')
+        tc_dataset = TensorDataset(tensor_tc,tensor_tc) # create your datset
+        tc_dataloader = DataLoader(tc_dataset,batch_size=256) # create your dataloader
 
-    ae = AE()
-    checkpoint = torch.load('models/AE_checkpoint.pth')
-    ae.load_state_dict(checkpoint['model_state_dict'])
-    ae.eval()
-    ae.to(device)
-    txt_chg_ae = []
-    
+        ae = AE()
+        checkpoint = torch.load('models/AE_checkpoint.pth')
+        ae.load_state_dict(checkpoint['model_state_dict'])
+        ae.eval()
+        ae.to(device)
+        txt_chg_ae = []
+        
 
-    for step,(x,y) in enumerate(tqdm(tc_dataloader)):
-        x = x.to(device)
-        txt_chg_ae.append(ae.encoder(x))
+        for step,(x,y) in enumerate(tqdm(tc_dataloader)):
+            x = x.to(device)
+            txt_chg_ae.append(ae.encoder(x))
 
-    txt_chg_ae = torch.cat(txt_chg_ae,0)
-    print(txt_chg_ae.size())
-    torch.save(txt_chg_ae, 'Data/txt_chg_ae.pt')
+        txt_chg_ae = torch.cat(txt_chg_ae,0)
+        print(txt_chg_ae.size())
+        torch.save(txt_chg_ae, 'Data/txt_chg_ae.pt')
 
 
 
