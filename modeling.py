@@ -135,6 +135,10 @@ class P2Q(nn.Module):
         x = self.self_attn(x)
         x, bi_hidden = self.bilstm_2(x)
         x = self.self_attn(x)
+        x, bi_hidden = self.bilstm_2(x)
+        x = self.self_attn(x)
+        x, bi_hidden = self.bilstm_2(x)
+        x = self.self_attn(x)
         return x
     
 if __name__=='__main__':
