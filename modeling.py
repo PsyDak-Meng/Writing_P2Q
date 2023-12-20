@@ -41,16 +41,20 @@ def load_data():
     del x
     
 
-    print(psutil.virtual_memory())
+    
 
     x_cat = np.hstack((id,act))
     del act
+    print(psutil.virtual_memory())
     x_cat = np.hstack((x_cat, down))
     del down
+    print(psutil.virtual_memory())
     x_cat = np.hstack((x_cat,  tc))
     del tc
+    print(psutil.virtual_memory())
     x_cat = np.hstack((x_cat, rest))
     del rest
+    print(psutil.virtual_memory())
     print(x_cat.shape)
 
     x_cat = pd.DataFrame(x_cat)
