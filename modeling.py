@@ -51,7 +51,8 @@ def load_data():
     print('Construct Dataframe...')
     x_cat = pd.DataFrame(x_cat)
     x_cat['id'] = id
-    x_cat = pd.DataFrame(x_cat.groupby(by="id", dropna=False).mean(),reset_index=True)
+    x_cat = pd.DataFrame(x_cat.groupby(by="id", dropna=False).mean())
+    x_cat.reset_index(drop=True, inplace=True)
     print(x.head())
 
 
