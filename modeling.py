@@ -33,7 +33,7 @@ def load_data():
     tc = torch.load('Data/txt_chg_ae.pt').detach().numpy()
     print('AE loaded...',tc.shape)
    
-    x = np.load('Data/x_train.npz') 
+    x = np.load('Data/x_train.npz',allow_pickle=True) 
     act = x['act']
     down = x['down']
     rest = x['rest']
