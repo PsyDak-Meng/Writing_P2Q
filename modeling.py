@@ -34,12 +34,23 @@ def load_data():
     print('AE loaded...',tc.shape)
    
     x = np.load('Data/x_train.npz') 
+    act = x['act']
+    down = x['down']
+    rest = x['rest']
+    del x
     print('np loaded...',x['down'].shape,x['rest'].shape)
 
     print(psutil.virtual_memory())
 
-    x_cat = np.hstack((id,x['act'],x['down'],tc,x['rest']))
-    print(x.shape)
+    x_cat = np.hstack((id,act))
+    del act
+    x_cat = np.hstack((x_cat, down))
+    del down
+    x_cat = np.hstack((x_cat,  tc))
+    del tc
+    x_cat = np.hstack((x_cat, rest))
+    del rest
+    print(x_cat.shape)
 
     x_cat = pd.DataFrame(x_cat)
     x_cat = pd.DataFrame(x_cat.groupby(by="id", dropna=False).mean(),reset_index=True)
