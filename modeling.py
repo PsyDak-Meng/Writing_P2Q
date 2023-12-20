@@ -162,7 +162,7 @@ if __name__=='__main__':
         optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
         # Send to GPU
         optimizer_to(optimizer,device)
-        last_epoch = checkpoint['epoch']
+        last_epoch = int(checkpoint['epoch'])
         last_epoch_loss = checkpoint['loss']
         model.train()
     else:
