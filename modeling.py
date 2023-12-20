@@ -37,17 +37,17 @@ def load_data():
     act = x['act']
     down = x['down']
     rest = x['rest']
-    print('np loaded...',x['down'].shape,x['rest'].shape)
+    print('np loaded...',act.shape,x['down'].shape,x['rest'].shape)
     del x
 
     size = id.shape[0]
     x_cat = np.zeros((size,1+32+47+5))
 
     print('Concatenating...')
-    x_cat[size,0] = id
-    x_cat[size,1:32] = tc
-    x_cat[size,33:33+46] = down
-    x_cat[size,33+47:33+47+4] = rest
+    x_cat[:,0] = id
+    x_cat[:,1:32] = tc
+    x_cat[:,33:33+46] = down
+    x_cat[:,33+47:33+47+4] = rest
 
     x_cat = pd.DataFrame(x_cat)
     x_cat = pd.DataFrame(x_cat.groupby(by="id", dropna=False).mean(),reset_index=True)
