@@ -56,7 +56,14 @@ def load_data():
     print(x_cat.head())
 
     train_scores = pd.read_csv('Data/train_scores.csv')
-    print(list(x_cat.index) == list(train_scores.index))
+    scores = {}
+    for idx, row in train_scores.iterrows():
+        scores[row['id']] = row['score']
+    train_scores = []
+    for idx, row in x_cat.iterrows():
+        train_scores.append(scores[row['id']])
+    train_scores = np.array(train_scores)
+    print(train_scores.shape)
 
 
 
