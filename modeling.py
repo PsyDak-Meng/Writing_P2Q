@@ -140,7 +140,7 @@ if __name__=='__main__':
     device = args.device
     print(device)
 
-    if args.delete == 'True':
+    if args.delete == 'True' and 'P2Q_checkpoint.pth' in os.listdir('models/'):
         os.remove('models/P2Q_checkpoint.pth')
     
     tensor_x, tensor_y = load_data()
