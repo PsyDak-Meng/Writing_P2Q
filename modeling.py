@@ -68,7 +68,7 @@ def load_data():
     x_cat  = np.array(x_cat)
     print('x:',x_cat.shape)
 
-    return x_cat,train_scores
+    return torch.tensor(x_cat),torch.tensor(train_scores)
 
 
 
@@ -109,7 +109,6 @@ class P2Q(nn.Module):
         return x
     
 if __name__=='__main__':
-    load_data()
     os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:256"
     parser = argparse.ArgumentParser(description="Choose device")
     parser.add_argument('-n','--device', default='cuda')
