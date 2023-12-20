@@ -41,7 +41,7 @@ def infer_AE(PATH):
 
     txt_chg_ae = torch.cat(txt_chg_ae,1)
     print(txt_chg_ae.size())
-    torch.save(txt_chg_ae, 'txt_chg_ae.pt')
+    torch.save(txt_chg_ae, 'Data/txt_chg_ae.pt')
 
 
 
