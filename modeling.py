@@ -26,9 +26,8 @@ def optimizer_to(optim, device):
 def load_data():
     print(psutil.virtual_memory())
     train_logs= pd.read_csv('Data/train_logs.csv')
-    id = np.array(train_logs['id'])
-    #id = id.reshape(id.shape[0],1)
-    print('id loaded...',id.shape)
+    id = train_logs['id']
+    print('id loaded...')
 
     tc = torch.load('Data/txt_chg_ae.pt').detach().numpy()
     print('AE loaded...',tc.shape)
@@ -41,16 +40,17 @@ def load_data():
     del x
 
     size = id.shape[0]
-    x_cat = np.zeros((size,1+32+6+47+5))
+    x_cat = np.zeros((size,32+6+47+5))
 
     print('Concatenating...')
-    x_cat[:,0] = id
-    x_cat[:,1:32] = tc
-    x_cat[:,33:33+5] = act
-    x_cat[:,33+6:33+6+46] = down
-    x_cat[:,33+6+47:33+6+47+4] = rest
+    x_cat[:,0:31] = tc
+    x_cat[:,32:32+5] = act
+    x_cat[:,32+6:32+6+46] = down
+    x_cat[:,32+6+47:32+6+47+4] = rest
 
+    print('Construct Dataframe...')
     x_cat = pd.DataFrame(x_cat)
+    x_cat['id'] = id
     x_cat = pd.DataFrame(x_cat.groupby(by="id", dropna=False).mean(),reset_index=True)
     print(x.head())
 
