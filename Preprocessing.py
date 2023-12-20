@@ -20,6 +20,7 @@ print(train_logs.head())
 
 def infer_AE(PATH):
     global device 
+
     txt_chg = np.load('Data/txt_chg_AE.npz')
     tensor_tc = torch.tensor(txt_chg['txt_chg'])
     tensor_tc = tensor_tc.type(torch.float).to('cpu')
@@ -27,7 +28,8 @@ def infer_AE(PATH):
     tc_dataloader = DataLoader(tc_dataset,batch_size=256) # create your dataloader
 
     ae = AE()
-    ae.load_state_dict(torch.load(PATH))
+    checkpoint = torch.load('models/AE_checkpoint.pth')
+    ae.load_state_dict(checkpoint['model_state_dict'])
     ae.eval()
     txt_chg_ae = []
     
