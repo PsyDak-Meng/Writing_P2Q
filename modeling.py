@@ -26,7 +26,7 @@ def load_data():
     train_logs= pd.read_csv('Data/train_logs.csv')
     id = np.array(train_logs['id'])
 
-    tc = torch.load('Data/txt_chg_ae.pt').numpy()
+    tc = torch.load('Data/txt_chg_ae.pt').detach().numpy()
     x = np.load('Data/x_train.npz') 
     act = x['act']
     up = x['up']
