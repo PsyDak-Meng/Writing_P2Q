@@ -25,50 +25,62 @@ def optimizer_to(optim, device):
 
 
 def load_data():
-    print(psutil.virtual_memory())
-    train_logs= pd.read_csv('Data/train_logs.csv')
-    id = train_logs['id']
-    print('id loaded...')
+    if 'final_train_x.pt' not in os.listdir('Data/') or 'final_train_y.pt' not in os.listdir('Data/'):
+        print(psutil.virtual_memory())
+        train_logs= pd.read_csv('Data/train_logs.csv')
+        id = train_logs['id']
+        print('id loaded...')
 
-    tc = torch.load('Data/txt_chg_ae.pt').detach().numpy()
-    print('AE loaded...',tc.shape)
-   
-    x = np.load('Data/x_train.npz',allow_pickle=True) 
-    act = x['act']
-    down = x['down']
-    rest = x['rest']
-    print('np loaded...',act.shape,x['down'].shape,x['rest'].shape)
-    del x
+        tc = torch.load('Data/txt_chg_ae.pt').detach().numpy()
+        print('AE loaded...',tc.shape)
+    
+        x = np.load('Data/x_train.npz',allow_pickle=True) 
+        act = x['act']
+        down = x['down']
+        rest = x['rest']
+        print('np loaded...',act.shape,x['down'].shape,x['rest'].shape)
+        del x
 
-    size = id.shape[0]
-    x_cat = np.zeros((size,32+6+47+5))
+        size = id.shape[0]
+        x_cat = np.zeros((size,32+6+47+5))
 
-    print('Concatenating...')
-    x_cat[:,0:32] = tc
-    x_cat[:,32:32+6] = act
-    x_cat[:,32+6:32+6+47] = down
-    x_cat[:,32+6+47:32+6+47+5] = rest
+        print('Concatenating...')
+        x_cat[:,0:32] = tc
+        x_cat[:,32:32+6] = act
+        x_cat[:,32+6:32+6+47] = down
+        x_cat[:,32+6+47:32+6+47+5] = rest
 
-    print('Construct Dataframe...')
-    x_cat = pd.DataFrame(x_cat)
-    x_cat['id'] = id
-    x_cat = pd.DataFrame(x_cat.groupby(by="id", dropna=False).mean())
-    #print(x_cat.head())
+        print('Construct Dataframe...')
+        x_cat = pd.DataFrame(x_cat)
+        x_cat['id'] = id
+        x_cat = pd.DataFrame(x_cat.groupby(by="id", dropna=False).mean())
+        #print(x_cat.head())
 
-    train_scores = pd.read_csv('Data/train_scores.csv')
-    scores = {}
-    for idx, row in train_scores.iterrows():
-        scores[row['id']] = row['score']
-    train_scores = []
-    for idx in x_cat.index:
-        train_scores.append(scores[idx])
-    train_scores = np.array(train_scores)
-    train_scores = train_scores.reshape(train_scores.shape[0],1)
-    print('y:',train_scores.shape)
-    x_cat  = np.array(x_cat)
-    print('x:',x_cat.shape)
+        train_scores = pd.read_csv('Data/train_scores.csv')
+        scores = {}
+        for idx, row in train_scores.iterrows():
+            scores[row['id']] = row['score']
+        train_scores = []
+        for idx in x_cat.index:
+            train_scores.append(scores[idx])
+        train_scores = np.array(train_scores)
+        train_scores = train_scores.reshape(train_scores.shape[0],1)
+        print('y:',train_scores.shape)
+        x_cat  = np.array(x_cat)
+        print('x:',x_cat.shape)
 
-    return torch.tensor(x_cat),torch.tensor(train_scores)
+        x_cat = torch.tensor(x_cat)
+        train_scores = torch.tensor(train_scores)
+
+        torch.save(x_cat,'Data/final_train_x.pt')
+        torch.save(train_scores,'Data/final_train_y.pt')
+    
+    else:
+        x_cat = torch.load('Data/final_train_x.pt')
+        train_scores = torch.load('Data/final_train_y.pt')
+
+
+    return x_cat, train_scores
 
 
 
@@ -104,7 +116,7 @@ class P2Q(nn.Module):
                                 batch_first=False,
                                 dropout=0,
                                 bidirectional=True)
-        self.self_attn = SelfAttention()
+        self.self_attn = SelfAttention(input_dim=input_dim)
 
     def forward(self, x):
         x = self.bilstm_1(x)
