@@ -32,13 +32,9 @@ def load_data():
     print('AE loaded...')
    
     x = np.load('Data/x_train.npz') 
-    act = x['act']
-    up = x['up']
-    down = x['down']
-    rest = x['rest']
     print('np loaded...')
 
-    x = np.hstack((id,act,up,down,tc,rest))
+    x = np.hstack((id,x['act'],x['down'],tc,x['rest']))
     print(x.shape)
 
     x = pd.DataFrame(x)
