@@ -153,7 +153,7 @@ if __name__=='__main__':
     model = P2Q(input_dim=90,hidden_dim=1024)
 
     # Validation using MSE Loss function
-    loss_function = RMSELoss()
+    loss_function = RMSELoss
 
     # Using an Adam Optimizer with lr = 0.001
     optimizer = torch.optim.Adam(model.parameters(),
