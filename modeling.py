@@ -26,14 +26,17 @@ def load_data():
     train_logs= pd.read_csv('Data/train_logs.csv')
     id = np.array(train_logs['id'])
     id = id.reshape(id.shape[0],1)
+    print('id loaded...')
 
     tc = torch.load('Data/txt_chg_ae.pt').detach().numpy()
+    print('AE loaded...')
    
     x = np.load('Data/x_train.npz') 
     act = x['act']
     up = x['up']
     down = x['down']
     rest = x['rest']
+    print('np loaded...')
 
     x = np.hstack((id,act,up,down,tc,rest))
     print(x.shape)
