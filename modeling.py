@@ -37,8 +37,9 @@ def load_data():
     act = x['act']
     down = x['down']
     rest = x['rest']
-    del x
     print('np loaded...',x['down'].shape,x['rest'].shape)
+    del x
+    
 
     print(psutil.virtual_memory())
 
