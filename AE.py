@@ -129,7 +129,7 @@ if __name__=='__main__':
         print(f'One step: {torch.cuda.memory_allocated(0)}')
 
         # Save Checkpoint
-        if (last_epoch_loss-epoch_loss)>0:
+        if epoch_loss<last_epoch_loss:
             torch.save({
                         'epoch': epoch,
                         'model_state_dict': model.state_dict(),
