@@ -103,7 +103,7 @@ if __name__=='__main__':
         model.train()
     else:
         last_epoch = 0
-        last_epoch_loss = 0
+        last_epoch_loss = np.inf
 
     print(f'epoch: {last_epoch}, training loss: {last_epoch_loss}')
     print(f'Before training: {torch.cuda.memory_allocated(0)}')
