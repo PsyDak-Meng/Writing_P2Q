@@ -129,13 +129,13 @@ if __name__=='__main__':
         print(f'One step: {torch.cuda.memory_allocated(0)}')
 
         # Save Checkpoint
-        #if (last_epoch_loss-epoch_loss)>0:
-        torch.save({
-                    'epoch': epoch,
-                    'model_state_dict': model.state_dict(),
-                    'optimizer_state_dict': optimizer.state_dict(),
-                    'loss': epoch_loss,
-                    }, 'models/AE_checkpoint.pth')
+        if (last_epoch_loss-epoch_loss)>0:
+            torch.save({
+                        'epoch': epoch,
+                        'model_state_dict': model.state_dict(),
+                        'optimizer_state_dict': optimizer.state_dict(),
+                        'loss': epoch_loss,
+                        }, 'models/AE_checkpoint.pth')
         
         torch.cuda.empty_cache()
 
