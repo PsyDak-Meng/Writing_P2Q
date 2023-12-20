@@ -52,9 +52,9 @@ def preprocess_logs(log):
     # TEXT CHANGE
     infer_AE('models/AE_checkpoint.pth')
 
-    # ACTIVITY
-    print('Encoding activity...')
-    if 'Act_onehot.npy' not in os.listdir('Data/'):
+    if 'x_train.npz' not in os.listdir('/Data'):
+        # ACTIVITY
+        print('Encoding activity...')
         act = list(map(lambda x:'Move' if 'Move' in x else x, log.activity))
         act_dict = {a:i for i,a in enumerate(set(act))}
         #print(act_dict)
@@ -63,11 +63,10 @@ def preprocess_logs(log):
             act_np[i,act_dict[act[i]]] = 1
         with open("Data/Act.json", "w") as outfile:
             json.dump(act_dict, outfile)
-    
 
-    # EVENT
-    print('Encoding event...')
-    if 'UpEvent_onehot.npy' not in os.listdir('Data/') or 'DownEvent_onehot.npy' not in os.listdir('Data/'):
+
+        # EVENT
+        print('Encoding event...')
         down = list(map(lambda x:'q' if len(x)==1 else x, log['down_event']))
         up = list(map(lambda x:'q' if len(x)==1 else x, log['up_event']))
         both = up.copy()
@@ -95,13 +94,12 @@ def preprocess_logs(log):
         with open("Data/Event.json", "w") as outfile:
             json.dump(event_dict, outfile)
 
-    # REST
-    print('Encoding rest...')
-    if 'rest.npy.npy' not in os.listdir('Data/'):
+        # REST
+        print('Encoding rest...')
         rest = log[['id','event_id','mean_time','action_time','cursor_position','word_count']].to_numpy()
 
-    with open('Data/x_train.npz', 'wb') as f:
-        np.savez(f, act=act_np, up=up_np,down=down_np,rest=rest)
+        with open('Data/x_train.npz', 'wb') as f:
+            np.savez(f, act=act_np, up=up_np,down=down_np,rest=rest)
     
 if __name__ =='__main__':
     parser = argparse.ArgumentParser(description="Choose device")
