@@ -79,16 +79,19 @@ class SelfAttention(nn.Module):
         self.query = nn.Linear(input_dim, input_dim)
         self.key = nn.Linear(input_dim, input_dim)
         self.value = nn.Linear(input_dim, input_dim)
-        self.softmax = nn.Softmax(dim=2)
+        self.linear = nn.Linear(input_dim,input_dim)
+        self.output = nn.Linear(input_dim,1)
         
     def forward(self, x):
         queries = self.query(x)
         keys = self.key(x)
         values = self.value(x)
         scores = torch.bmm(queries, keys.transpose(1, 2)) / (self.input_dim ** 0.5)
-        attention = self.softmax(scores)
+        attention = self.linear(scores)
         weighted = torch.bmm(attention, values)
-        return weighted
+        output = self.output(weighted)
+
+        return output
     
 class P2Q(nn.Module):
     def __init__(self, input_dim, hidden_dim):
@@ -124,7 +127,7 @@ if __name__=='__main__':
     dataloader = DataLoader(dataset,batch_size=256) # create your dataloader
     
     # Initialize Model
-    model = P2Q()
+    model = P2Q(input_dim=90,hidden_dim=512)
 
     # Validation using MSE Loss function
     loss_function = torch.nn.MSELoss()
