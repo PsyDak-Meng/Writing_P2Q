@@ -31,6 +31,7 @@ def infer_AE(PATH):
     checkpoint = torch.load('models/AE_checkpoint.pth')
     ae.load_state_dict(checkpoint['model_state_dict'])
     ae.eval()
+    ae.to(device)
     txt_chg_ae = []
     
 
