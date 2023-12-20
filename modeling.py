@@ -118,7 +118,7 @@ class P2Q(nn.Module):
                                 batch_first=False,
                                 dropout=0,
                                 bidirectional=True)
-        self.self_attn = SelfAttention(input_dim=input_dim*2)
+        self.self_attn = SelfAttention(input_dim=hidden_dim*2)
 
     def forward(self, x):
         x,bi_hidden = self.bilstm_1(x)
