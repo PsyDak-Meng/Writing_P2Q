@@ -49,6 +49,8 @@ def infer_AE(PATH):
 def preprocess_logs(log):
     #enc = OneHotEncoder()
     log['mean_time'] = (log['down_time']+log['up_time'])/2
+    log['up=down'] = log['down_event'] == log['up_event']
+    log['up=down'].map(lambda x: 1 if x else 0)
 
     # TEXT CHANGE
     infer_AE('models/AE_checkpoint.pth')
@@ -81,15 +83,15 @@ def preprocess_logs(log):
         #print(event_dict)
 
         down = list(map(lambda x:'Others' if x in neglected or len(x)<1 else x, down))
-        up = list(map(lambda x:'Others' if x in neglected or len(x)<1 else x, down))
+        #up = list(map(lambda x:'Others' if x in neglected or len(x)<1 else x, down))
 
         down_np = np.zeros((log.shape[0],len(event_dict)))
-        up_np = np.zeros((log.shape[0],len(event_dict)))
+        #up_np = np.zeros((log.shape[0],len(event_dict)))
 
         for i in tqdm(range(len(down))):
             down_np[i,event_dict[down[i]]] = 1
-        for i in tqdm(range(len(up))):
-            up_np[i,event_dict[up[i]]] = 1
+        """ for i in tqdm(range(len(up))):
+            up_np[i,event_dict[up[i]]] = 1 """
 
 
         with open("Data/Event.json", "w") as outfile:
@@ -100,7 +102,7 @@ def preprocess_logs(log):
         rest_np = np.array(log[['mean_time','action_time','cursor_position','word_count']])
 
         with open('Data/x_train.npz', 'wb') as f:
-            np.savez(f, act=act_np, up=up_np,down=down_np,rest=rest_np)
+            np.savez(f, act=act_np, down=down_np,rest=rest_np)
     
 if __name__ =='__main__':
     parser = argparse.ArgumentParser(description="Choose device")
