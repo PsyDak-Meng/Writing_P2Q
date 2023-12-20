@@ -6,6 +6,7 @@ import argparse
 from tqdm import tqdm
 import numpy as np
 import pandas as pd
+import psutil
 
 def optimizer_to(optim, device):
     for param in optim.state.values():
@@ -23,6 +24,7 @@ def optimizer_to(optim, device):
 
 
 def load_data():
+    print(psutil.virtual_memory())
     train_logs= pd.read_csv('Data/train_logs.csv')
     id = np.array(train_logs['id'])
     id = id.reshape(id.shape[0],1)
@@ -33,6 +35,8 @@ def load_data():
    
     x = np.load('Data/x_train.npz') 
     print('np loaded...',x['down'].shape,x['rest'].shape)
+
+    psutil.virtual_memory()
 
     x = np.hstack((id,x['act'],x['down'],tc,x['rest']))
     print(x.shape)
