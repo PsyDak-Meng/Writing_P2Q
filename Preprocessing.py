@@ -37,7 +37,7 @@ def infer_AE(PATH):
 
     for step,(x,y) in enumerate(tqdm(tc_dataloader)):
         x = x.to(device)
-        txt_chg_ae.append(ae.decoder(x))
+        txt_chg_ae.append(ae.encoder(x))
 
     txt_chg_ae = torch.stack(txt_chg_ae)
     print(txt_chg_ae.size())
