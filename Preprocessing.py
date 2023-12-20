@@ -21,7 +21,7 @@ train_logs = pd.read_csv('Data/train_logs.csv')
 def infer_AE(PATH):
     global device 
 
-    if 'txt_chg_ae.pt' not in os.listdir('/Data'):
+    if 'txt_chg_ae.pt' not in os.listdir('Data/'):
         txt_chg = np.load('Data/txt_chg_AE.npz')
         tensor_tc = torch.tensor(txt_chg['txt_chg'])
         tensor_tc = tensor_tc.type(torch.float).to('cpu')
@@ -53,7 +53,7 @@ def preprocess_logs(log):
     # TEXT CHANGE
     infer_AE('models/AE_checkpoint.pth')
 
-    if 'x_train.npz' not in os.listdir('/Data'):
+    if 'x_train.npz' not in os.listdir('Data/'):
         # ACTIVITY
         print('Encoding activity...')
         act = list(map(lambda x:'Move' if 'Move' in x else x, log.activity))
