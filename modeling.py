@@ -121,7 +121,7 @@ class P2Q(nn.Module):
                                 dropout=0,
                                 bidirectional=True)
         self.self_attn = SelfAttention(input_dim=hidden_dim*2)
-        self.bilstm_1 = nn.LSTM(hidden_dim*2,
+        self.bilstm_2 = nn.LSTM(hidden_dim*2,
                                 hidden_dim,
                                 num_layers=2,
                                 bias=True,
