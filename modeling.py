@@ -43,10 +43,10 @@ def load_data():
     x_cat = np.zeros((size,32+6+47+5))
 
     print('Concatenating...')
-    x_cat[:,0:31] = tc
-    x_cat[:,32:32+5] = act
-    x_cat[:,32+6:32+6+46] = down
-    x_cat[:,32+6+47:32+6+47+4] = rest
+    x_cat[:,0:32] = tc
+    x_cat[:,32:32+6] = act
+    x_cat[:,32+6:32+6+47] = down
+    x_cat[:,32+6+47:32+6+47+5] = rest
 
     print('Construct Dataframe...')
     x_cat = pd.DataFrame(x_cat)
