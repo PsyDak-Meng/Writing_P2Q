@@ -86,7 +86,7 @@ if __name__=='__main__':
 
     # Using an Adam Optimizer with lr = 0.1
     optimizer = torch.optim.Adam(model.parameters(),
-                                lr = 1e-1,
+                                lr = 1e-3,
                                 weight_decay = 1e-8)
 
     epochs = 20
