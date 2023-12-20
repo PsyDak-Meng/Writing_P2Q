@@ -76,6 +76,7 @@ def load_data():
         torch.save(train_scores,'Data/final_train_y.pt')
     
     else:
+        print('Loading prepared training tensors...')
         x_cat = torch.load('Data/final_train_x.pt')
         train_scores = torch.load('Data/final_train_y.pt')
 
@@ -91,6 +92,7 @@ class SelfAttention(nn.Module):
         self.query = nn.Linear(input_dim, input_dim)
         self.key = nn.Linear(input_dim, input_dim)
         self.value = nn.Linear(input_dim, input_dim)
+        self.softmax = nn.Softmax(dim=90)
         self.linear = nn.Linear(input_dim,input_dim)
         self.output = nn.Linear(input_dim,1)
         
@@ -99,7 +101,7 @@ class SelfAttention(nn.Module):
         keys = self.key(x)
         values = self.value(x)
         scores = torch.bmm(queries, keys.transpose(1, 2)) / (self.input_dim ** 0.5)
-        attention = self.linear(scores)
+        attention = self.softmax(scores)
         weighted = torch.bmm(attention, values)
         output = self.output(weighted)
 
@@ -135,6 +137,8 @@ if __name__=='__main__':
     print(device)
 
     tensor_x, tensor_y = load_data()
+    tensor_x = tensor_x.type(torch.float32)
+    tensor_y = tensor_y.type(torch.float32)
     dataset = TensorDataset(tensor_x, tensor_y ) # create your datset
     dataloader = DataLoader(dataset,batch_size=256) # create your dataloader
     
