@@ -23,6 +23,9 @@ def optimizer_to(optim, device):
                     if subparam._grad is not None:
                         subparam._grad.data = subparam._grad.data.to(device)
 
+def RMSELoss(yhat,y):
+    return torch.sqrt(torch.mean((yhat-y)**2))
+
 
 def load_data():
     if 'final_train_x.pt' not in os.listdir('Data/') or 'final_train_y.pt' not in os.listdir('Data/'):
@@ -146,7 +149,7 @@ if __name__=='__main__':
     model = P2Q(input_dim=90,hidden_dim=512)
 
     # Validation using MSE Loss function
-    loss_function = torch.nn.MSELoss()
+    loss_function = RMSELoss()
 
     # Using an Adam Optimizer with lr = 0.001
     optimizer = torch.optim.Adam(model.parameters(),
