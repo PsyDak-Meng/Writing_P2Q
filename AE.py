@@ -143,11 +143,3 @@ if __name__=='__main__':
         torch.cuda.empty_cache()
 
 
-
-    # Defining the Plot Style
-    plt.style.use('fivethirtyeight')
-    plt.xlabel('Iterations')
-    plt.ylabel('Loss')
-
-    # Plotting the last 100 values
-    plt.plot(losses[-100:])
