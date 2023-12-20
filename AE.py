@@ -130,6 +130,8 @@ if __name__=='__main__':
 
         # Save Checkpoint
         if epoch_loss<last_epoch_loss:
+            last_epoch_loss = epoch_loss
+            print(f'Saving epoch {epoch}')
             torch.save({
                         'epoch': epoch,
                         'model_state_dict': model.state_dict(),
