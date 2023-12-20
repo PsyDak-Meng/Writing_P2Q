@@ -91,7 +91,6 @@ if __name__=='__main__':
 
     epochs = 20
     outputs = []
-    losses = 0
 
     if 'AE_checkpoint.pth' in os.listdir('models/'):
         checkpoint = torch.load('models/AE_checkpoint.pth')
@@ -110,6 +109,7 @@ if __name__=='__main__':
     print(f'Before training: {torch.cuda.memory_allocated(0)}')
     model = model.to(device)
     for epoch in range(last_epoch+1,epochs):
+        losses = 0
         for step,(x,y) in enumerate(tqdm(tc_dataloader)):
             x = x.to(device)
             y = y.to(device)
