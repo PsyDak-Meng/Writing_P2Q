@@ -127,8 +127,8 @@ class P2Q(nn.Module):
         self.out = nn.Linear(90,1)
 
 
-    def forward(self, x):
-        x = self.transformer(x)
+    def forward(self, src, tgt):
+        x = self.transformer(src,tgt)
         x = self.out(x)
         return x
     
@@ -190,7 +190,7 @@ if __name__=='__main__':
             x = x.to(device)
             y = y.to(device)
 
-            y_pred = model(x)
+            y_pred = model(x,y)
             loss = loss_function(y_pred, y)
             
             optimizer.zero_grad()
