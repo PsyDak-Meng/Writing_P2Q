@@ -67,6 +67,13 @@ def load_data():
             train_scores.append(scores[idx])
         train_scores = np.array(train_scores)
         train_scores = train_scores.reshape(train_scores.shape[0],1)
+
+        del act
+        del down
+        del rest
+        del id
+        del scores
+
         print('y:',train_scores.shape)
         x_cat  = np.array(x_cat)
         print('x:',x_cat.shape)
