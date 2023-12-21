@@ -122,8 +122,8 @@ class P2Q(nn.Module):
                                           num_encoder_layers=6,num_decoder_layers=6, 
                                           dim_feedforward=2048, dropout=0.1, activation="relu",
                                           layer_norm_eps=1e-05, 
-                                          batch_first=False, norm_first=False, 
-                                          bias=True)
+                                          batch_first=False, norm_first=False
+                                         )
         self.out = nn.Linear(90,1)
 
 
