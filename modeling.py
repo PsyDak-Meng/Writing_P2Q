@@ -150,6 +150,7 @@ if __name__=='__main__':
     tensor_x, tensor_y = load_data()
     tensor_x = tensor_x.type(torch.float32)
     tensor_y = tensor_y.type(torch.float32)
+    print(f"input shape: {tensor_x.size()}, output shape: {tensor_y.size()}")
     dataset = TensorDataset(tensor_x, tensor_y ) # create your datset
     dataloader = DataLoader(dataset,batch_size=256) # create your dataloader
     
