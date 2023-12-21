@@ -55,7 +55,6 @@ def load_data():
 
         print('Construct Dataframe...')
         x_cat = pd.DataFrame(x_cat)
-        x_cat['id'] = id
         #x_cat = pd.DataFrame(x_cat.groupby(by="id", dropna=False).mean())
 
         train_scores = pd.read_csv('Data/train_scores.csv')
@@ -63,7 +62,7 @@ def load_data():
         for idx, row in train_scores.iterrows():
             scores[row['id']] = row['score']
         train_scores = []
-        for idx in tqdm(x_cat['id'],'Matching score to id...'):
+        for idx in tqdm(id,'Matching score to id...'):
             train_scores.append(scores[idx])
         train_scores = np.array(train_scores)
         train_scores = train_scores.reshape(train_scores.shape[0],1)
@@ -74,15 +73,15 @@ def load_data():
         del id
         del scores
 
-        print('y:',train_scores.shape)
+        print('y:',train_scores.shape) 
         x_cat  = np.array(x_cat)
         print('x:',x_cat.shape)
 
         x_cat = torch.tensor(x_cat)
         train_scores = torch.tensor(train_scores)
-
-        torch.save(x_cat,'Data/final_train_x.pt')
         torch.save(train_scores,'Data/final_train_y.pt')
+        torch.save(x_cat,'Data/final_train_x.pt')
+        
     
     else:
         print('Loading prepared training tensors...')
