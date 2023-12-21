@@ -190,7 +190,7 @@ if __name__=='__main__':
             x = x.to(device)
             y = y.to(device)
 
-            y_pred = model(x,y)
+            y_pred = model(x,x)
             loss = loss_function(y_pred, y)
             
             optimizer.zero_grad()
