@@ -118,8 +118,8 @@ class P2Q(nn.Module):
     def __init__(self, input_dim, hidden_dim):
         super(P2Q, self).__init__()
         self.input_dim = input_dim
-        self.transformer = nn.Transformer(d_model=90,nhead=9,
-                                          num_encoder_layers=3,num_decoder_layers=3, 
+        self.transformer = nn.Transformer(d_model=90,nhead=6,
+                                          num_encoder_layers=6,num_decoder_layers=6, 
                                           dim_feedforward=1024, dropout=0.1, activation="relu",
                                           layer_norm_eps=1e-05, 
                                           batch_first=False, norm_first=False
