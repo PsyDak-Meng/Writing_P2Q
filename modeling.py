@@ -63,7 +63,7 @@ def load_data():
         for idx, row in train_scores.iterrows():
             scores[row['id']] = row['score']
         train_scores = []
-        for idx in tqdm(x_cat.index,'Matching score to id...'):
+        for idx in tqdm(x_cat['id'],'Matching score to id...'):
             train_scores.append(scores[idx])
         train_scores = np.array(train_scores)
         train_scores = train_scores.reshape(train_scores.shape[0],1)
@@ -120,7 +120,7 @@ class P2Q(nn.Module):
                                           bias=True,)
         self.out = nn.Linear(90,1)
 
-        
+
     def forward(self, x):
         x = self.transformer(x)
         x = self.out(x)
