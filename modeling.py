@@ -29,7 +29,7 @@ def RMSELoss(yhat,y):
 
 def load_data():
     if 'final_train_x.pt' not in os.listdir('Data/') or 'final_train_y.pt' not in os.listdir('Data/'):
-        print(psutil.virtual_memory())
+        #print(psutil.virtual_memory())
         train_logs= pd.read_csv('Data/train_logs.csv')
         id = train_logs['id']
         print('id loaded...')
@@ -56,15 +56,14 @@ def load_data():
         print('Construct Dataframe...')
         x_cat = pd.DataFrame(x_cat)
         x_cat['id'] = id
-        x_cat = pd.DataFrame(x_cat.groupby(by="id", dropna=False).mean())
-        #print(x_cat.head())
+        #x_cat = pd.DataFrame(x_cat.groupby(by="id", dropna=False).mean())
 
         train_scores = pd.read_csv('Data/train_scores.csv')
         scores = {}
         for idx, row in train_scores.iterrows():
             scores[row['id']] = row['score']
         train_scores = []
-        for idx in x_cat.index:
+        for idx in tqdm(x_cat.index,'Matching score to id...'):
             train_scores.append(scores[idx])
         train_scores = np.array(train_scores)
         train_scores = train_scores.reshape(train_scores.shape[0],1)
@@ -113,32 +112,18 @@ class P2Q(nn.Module):
     def __init__(self, input_dim, hidden_dim):
         super(P2Q, self).__init__()
         self.input_dim = input_dim
-        self.bilstm_1 = nn.LSTM(input_dim,
-                                hidden_dim,
-                                num_layers=2,
-                                bias=True,
-                                batch_first=False,
-                                dropout=0,
-                                bidirectional=True)
-        self.self_attn = SelfAttention(input_dim=hidden_dim*2)
-        self.bilstm_2 = nn.LSTM(hidden_dim*2,
-                                hidden_dim,
-                                num_layers=2,
-                                bias=True,
-                                batch_first=False,
-                                dropout=0,
-                                bidirectional=True)
+        self.transformer = nn.Transformer(d_model=90,nhead=8,
+                                          num_encoder_layers=6,num_decoder_layers=6, 
+                                          dim_feedforward=2048, dropout=0.1, activation="relu",
+                                          layer_norm_eps=1e-05, 
+                                          batch_first=False, norm_first=False, 
+                                          bias=True,)
+        self.out = nn.Linear(90,1)
 
-
+        
     def forward(self, x):
-        x,bi_hidden = self.bilstm_1(x)
-        x = self.self_attn(x)
-        x, bi_hidden = self.bilstm_2(x)
-        x = self.self_attn(x)
-        x, bi_hidden = self.bilstm_2(x)
-        x = self.self_attn(x)
-        x, bi_hidden = self.bilstm_2(x)
-        x = self.self_attn(x)
+        x = self.transformer(x)
+        x = self.out(x)
         return x
     
 if __name__=='__main__':
